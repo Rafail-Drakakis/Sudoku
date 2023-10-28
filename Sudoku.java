@@ -35,7 +35,7 @@ public class Sudoku {
 				if (initialBoard[row][column] == NO_VALUE) {
 					for (int k = MIN_VALUE; k <= MAX_VALUE; k++) {
 						initialBoard[row][column] = k;
-						if (isValid(initialBoard, row, column) && solve(initialBoard)) {
+						if (isValidSudoku(initialBoard, row, column) && solve(initialBoard)) {
 							return true;
 						}
 						initialBoard[row][column] = NO_VALUE;
@@ -47,51 +47,9 @@ public class Sudoku {
 		return true;
 	}
 
-	private boolean isValid(int[][] initialBoard, int row, int column) { //Given method
-		return rowConstraint(initialBoard, row) && columnConstraint(initialBoard, column) && subsectionConstraint(initialBoard, row, column);
+	private boolean isValidSudoku(int[][] initialBoard, int row, int column) { //Given method
+		return isValidBoard(initialBoard) && isValidColumn(initialBoard, column) && isValidRow(initialBoard, row);
 	}
-
-	private boolean subsectionConstraint(int[][] initialBoard, int row, int column) { //Given method
-		boolean[] constraint = new boolean[BOARD_SIZE];
-		int subsectionRowStart = (row / SUBSECTION_SIZE) * SUBSECTION_SIZE;
-		int subsectionRowEnd = subsectionRowStart + SUBSECTION_SIZE;
-
-		int subsectionColumnStart = (column / SUBSECTION_SIZE) * SUBSECTION_SIZE;
-		int subsectionColumnEnd = subsectionColumnStart + SUBSECTION_SIZE;
-
-		for (int r = subsectionRowStart; r < subsectionRowEnd; r++) {
-			for (int c = subsectionColumnStart; c < subsectionColumnEnd; c++) {
-				if (!checkConstraint(initialBoard, r, constraint, c))
-					return false;
-			}
-		}
-		return true;
-	}
-
-	private boolean columnConstraint(int[][] initialBoard, int column) { //Given method
-		boolean[] constraint = new boolean[BOARD_SIZE];
-		return IntStream.range(BOARD_START_INDEX, BOARD_SIZE)
-				.allMatch(row -> checkConstraint(initialBoard, row, constraint, column));
-	}
-
-	private boolean rowConstraint(int[][] initialBoard, int row) { //Given method
-		boolean[] constraint = new boolean[BOARD_SIZE];
-		return IntStream.range(BOARD_START_INDEX, BOARD_SIZE)
-				.allMatch(column -> checkConstraint(initialBoard, row, constraint, column));
-	}
-
-	private boolean checkConstraint(int[][] initialBoard, int row, boolean[] constraint, int column) { //Given method
-		if (initialBoard[row][column] != NO_VALUE) {
-			if (!constraint[initialBoard[row][column] - 1]) {
-				constraint[initialBoard[row][column] - 1] = true;
-			} else {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	//My methods
 
 	private boolean isValidBoard(int[][] initialBoard) {
 	    for (int i = 0; i < BOARD_SIZE; i++) {
@@ -197,21 +155,17 @@ public class Sudoku {
 			        }
 			    }
 	        }
-			printBoards(i, boardTobeSolved, initialBoard);        
+			System.out.println("Board #" + (i + 1)); //print a message
+		    printBoard(boardTobeSolved);
+		    System.out.println("Solution of the Board #" + (i + 1)); //print the initialBoard
+		    printBoard(initialBoard);
 	    }
 	    long endClock = System.currentTimeMillis(); // End the time clock
 	    float clocktime = (endClock - startClock) / 1000F; // Calculate the time
 	    printResults(X, N, countInvalid, countUnsolvable, clocktime);
 	    
 	}
-
-	void printBoards(int i, int[][] boardTobeSolved, int[][] initialBoard){
-		System.out.println("Board #" + (i + 1)); //print a message
-	    printBoard(boardTobeSolved);
-	    System.out.println("Solution of the Board #" + (i + 1)); //print the initialBoard
-	    printBoard(initialBoard);
-	}
-
+	
 	void printResults(int X, int N, int countInvalid, int countUnsolvable, float clocktime){
 		// Display the results
 	    System.out.println("Empty cells per board     : " + X);

@@ -1,5 +1,4 @@
 import random
-import numpy
 
 def sudoku_number_is_valid(board):
     """
@@ -222,7 +221,7 @@ def input_array():
             except ValueError:
                 print("Invalid input. Please enter integer values separated by spaces.")
 
-    return numpy.array(array)
+    return array
 
 def main():
     choice = int(input("Sudoku Solver, Checker, and Generator\nEnter\n1.To check if a given sudoku has solution\n2.To generate a random sudoku\n3.To solve a sudoku\n4.To generate a random sudoku and solve it: "))
