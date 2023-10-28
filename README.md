@@ -2,7 +2,7 @@
 
 ## Description
 
-This repository contains implementations of a Sudoku solver in three different programming languages: Python, Java, and C.
+This repository contains implementations of a Sudoku maker, solver, and generator in three different programming languages: Python, Java, and C.
 
 ## Instructions
 
