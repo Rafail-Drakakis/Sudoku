@@ -68,7 +68,9 @@ def solve_sudoku(board):
         return True
 
     row, col = find_empty_cell(board)
-    for num in range(1, 10):
+    numbers = list(range(1, 10))
+    random.shuffle(numbers)  # Randomizing the order of numbers tried
+    for num in numbers:
         if number_is_valid(board, row, col, num):
             board[row][col] = num
             if solve_sudoku(board):
@@ -144,6 +146,15 @@ def generate_sudoku(difficulty):
     :return: a Sudoku board with a specified difficulty level.
     """
     board = [[0] * 9 for _ in range(9)]
+    
+    # Randomly filling a few cells before solving
+    for _ in range(random.randint(3, 5)):  
+        row = random.randint(0, 8)
+        col = random.randint(0, 8)
+        num = random.randint(1, 9)
+        if number_is_valid(board, row, col, num):
+            board[row][col] = num
+    
     solve_sudoku(board)
     remove_cells(board, difficulty)
     return board
@@ -213,85 +224,46 @@ def input_array():
 
     return numpy.array(array)
 
-def sudoku_checker_menu():
-    """
-    The function `checker_menu()` prompts the user to enter a Sudoku puzzle, checks if the puzzle is
-    valid, and prints a message indicating whether the puzzle is valid or invalid.
-    """
-    print("Enter the Sudoku puzzle:")
-    board = input_array()
-    if sudoku_number_is_valid(board):
-        print("\nThe Sudoku board is valid.")
-    else:
-        print("\nThe Sudoku board is invalid.")
-
-def sudoku_generator_menu():
-    """
-    The function `generator_menu()` prompts the user for a difficulty level, generates a Sudoku board
-    with the specified number of non-zero elements, and then prints the generated board.
-    """
-    print("Sudoku Generator")
-    difficulty_level = int(input("Enter the number of non-zero elements for the generated Sudoku board: "))
-    print("Generating a Sudoku board:")
-    sudoku_board = generate_sudoku(difficulty_level)
-    print_board(sudoku_board)
-
-def sudoku_solver_menu():
-    """
-    The function `solver_menu()` takes user input for a Sudoku puzzle, solves it using the
-    `solve_sudoku()` function, and prints the original puzzle and its solution.
-    """
-    print("Sudoku Solver\nEnter the Sudoku puzzle to solve:")
-    puzzle = input_array()
-    print("Original puzzle:")
-    print_board(puzzle)
-    if solve_sudoku(puzzle):
-        print("\nSolution:")
-        print_board(puzzle)
-    else:
-        print("\nNo solution exists for the puzzle.")
-        
-def generate_and_solve_random_sudoku():
-    """
-    The function generates and solves a random Sudoku board based on the specified difficulty level.
-    """
-    difficulty_level = int(input("Enter the number of non-zero elements for the generated Sudoku board: "))
-    sudoku_board = generate_sudoku(difficulty_level)
-    print("\nOriginal:")
-    print_board(sudoku_board)
-
-    if solve_sudoku(sudoku_board):
-        print("\nSolution:")
-        print_board(sudoku_board)
-    else:
-        print("\nNo solution exists for the puzzle.")
-
-def get_user_input():
-    """
-    The function `get_user_input` prompts the user to choose an option related to Sudoku and returns the
-    user's choice.
-    :return: the user's choice as an integer.
-    """
+def main():
     choice = int(input("Sudoku Solver, Checker, and Generator\nEnter\n1.To check if a given sudoku has solution\n2.To generate a random sudoku\n3.To solve a sudoku\n4.To generate a random sudoku and solve it: "))
     if choice not in [1,2,3,4]:
         print("invalid input")
         exit(0)
-    else:
-        return choice
 
-def main():
-    """
-    The main function takes user input and calls different menus based on the choice made.
-    """
-    choice = get_user_input()
     if choice == 1:
-        sudoku_checker_menu()
+        print("Enter the Sudoku puzzle:")
+        board = input_array()
+        if sudoku_number_is_valid(board):
+            print("\nThe Sudoku board is valid.")
+        else:
+            print("\nThe Sudoku board is invalid.")
     elif choice == 2:
-        sudoku_generator_menu()    
+        print("Sudoku Generator")
+        difficulty_level = int(input("Enter the number of non-zero elements for the generated Sudoku board: "))
+        print("Generating a Sudoku board:")
+        sudoku_board = generate_sudoku(difficulty_level)
+        print_board(sudoku_board)
     elif choice == 3:
-        sudoku_solver_menu()
+        print("Enter the Sudoku puzzle to solve:")
+        puzzle = input_array()
+        print("Original puzzle:")
+        print_board(puzzle)
+        if solve_sudoku(puzzle):
+            print("\nSolution:")
+            print_board(puzzle)
+        else:
+            print("\nNo solution exists for the puzzle.")
     elif choice == 4:
-        generate_and_solve_random_sudoku()
+        difficulty_level = int(input("Enter the number of non-zero elements for the generated Sudoku board: "))
+        sudoku_board = generate_sudoku(difficulty_level)
+        print("\nOriginal:")
+        print_board(sudoku_board)
+
+        if solve_sudoku(sudoku_board):
+            print("\nSolution:")
+            print_board(sudoku_board)
+        else:
+            print("\nNo solution exists for the puzzle.")
 
 if __name__ == "__main__":
     main()

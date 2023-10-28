@@ -45,17 +45,27 @@ int is_valid(int board[SIZE][SIZE], int row, int col, int num) {
 
 // Function to solve the Sudoku using backtracking
 int solve_sudoku(int board[SIZE][SIZE]) {
+    int numbers[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    
     for (int row = 0; row < SIZE; row++) {
         for (int col = 0; col < SIZE; col++) {
             if (board[row][col] == 0) {
-                for (int num = 1; num <= 9; num++) {
+                // Shuffle the numbers array
+                for (int i = 8; i >= 0; i--) {
+                    int j = rand() % (i+1);
+                    int temp = numbers[i];
+                    numbers[i] = numbers[j];
+                    numbers[j] = temp;
+                }
+                
+                // Try shuffled numbers
+                for (int i = 0; i < 9; i++) {
+                    int num = numbers[i];
                     if (is_valid(board, row, col, num)) {
                         board[row][col] = num;
-
                         if (solve_sudoku(board)) {
                             return 1;
                         }
-
                         board[row][col] = 0;
                     }
                 }
@@ -65,6 +75,7 @@ int solve_sudoku(int board[SIZE][SIZE]) {
     }
     return 1;
 }
+
 
 void removeCells(int board[SIZE][SIZE], int cellsToRemove) {
     int row, col;
@@ -108,16 +119,13 @@ int main() {
 
     int board[SIZE][SIZE];
 
-    if (choice == 1 || choice == 2) {
+    if (choice == 1) {
         printf("Enter the Sudoku puzzle (use 0 for empty cells):\n");
         for (int row = 0; row < SIZE; row++) {
             for (int col = 0; col < SIZE; col++) {
                 scanf("%d", &board[row][col]);
             }
         }
-    }
-
-    if (choice == 1) {
         if (solve_sudoku(board)) {
             printf("Solved Sudoku:\n");
             print_board(board);
@@ -125,6 +133,12 @@ int main() {
             printf("No solution exists.\n");
         }
     } else if (choice == 2) {
+        printf("Enter the Sudoku puzzle (use 0 for empty cells):\n");
+        for (int row = 0; row < SIZE; row++) {
+            for (int col = 0; col < SIZE; col++) {
+                scanf("%d", &board[row][col]);
+            }
+        }
         if (solve_sudoku(board)) {
             printf("The Sudoku puzzle is valid.\n");
         } else {
@@ -135,16 +149,14 @@ int main() {
         int difficulty;
         printf("Enter the number of non-zero elements for the generated Sudoku board: ");
         scanf("%d", &difficulty);
-        
         generateSudoku(board, difficulty);
         print_board(board);
     } else if (choice == 4){
-        initialize_sudoku(board);
         int difficulty;
         printf("Enter the number of non-zero elements for the generated Sudoku board: ");
         scanf("%d", &difficulty);
         generateSudoku(board, difficulty);
-        printf("Solved Sudoku:\n");
+        printf("Initial Sudoku:\n");
         print_board(board);    
         if (solve_sudoku(board)) {
             printf("Solved Sudoku:\n");
@@ -152,8 +164,7 @@ int main() {
         } else {
             printf("No solution exists.\n");
         }
-    }
-
+    }   
     else {
         printf("Invalid choice!\n");
     }

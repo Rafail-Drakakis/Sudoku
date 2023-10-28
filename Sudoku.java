@@ -17,7 +17,7 @@ public class Sudoku {
 
 		Sudoku solver = new Sudoku();
 
-		solver.GenerateSudokuWithEmptyCells(60, 100); //My method to solve the Sudoku
+		solver.GenerateSudokuWithEmptyCells(60, 2); //My method to solve the Sudoku
 	}
 
 	private void printBoard(int [][] brd) { //Given method
@@ -92,13 +92,6 @@ public class Sudoku {
 	}
 
 	//My methods
-
-	public boolean isSolvableBoard(int[][] initialBoard) {
-	    if (!isValidBoard(initialBoard) || !solve(initialBoard)) {  //If it is not valid or solvable, return false
-	        return false;
-	    }
-	    return true;
-	}
 
 	private boolean isValidBoard(int[][] initialBoard) {
 	    for (int i = 0; i < BOARD_SIZE; i++) {
@@ -194,12 +187,7 @@ public class Sudoku {
 	            initializeBoard(initialBoard, BOARD_SIZE);
 	            initializeBoard(boardTobeSolved, BOARD_SIZE);
 	            generateRandomCells(initialBoard, boardTobeSolved, numEmptyCells);
-	            
-	            //The idea is that if a board is not valid, we will try to solve it. 
-	            //Else we will continue with the next sudoku. 
-	            //I got it from a fellow student, and implemented it my own way.
-
-	            isValid = isValidBoard(boardTobeSolved);
+				isValid = isValidBoard(boardTobeSolved);
 	            if (!isValid) {
 			        countInvalid++;
 			    } else {
