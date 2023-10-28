@@ -32,10 +32,79 @@ void GenerateSudokuWithEmptyCells(int X, int N);
 
 void printResults(int X, int N, int countInvalid, int countUnsolvable, float clocktime);
 
+void menu(int choice);
+
 int main() {
-    GenerateSudokuWithEmptyCells(60, 10);
+    int choice = 0;
+
+    printf("Sudoku Menu:\n");
+    printf("1. Create a random Sudoku board with empty cells\n");
+    printf("2. Check if a Sudoku puzzle has a solution\n");
+    printf("3. Solve a Sudoku puzzle\n");
+    printf("4. Exit\n");
+
+    while (choice != 4) {
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+        menu(choice);
+
     return 0;
+    }
 }
+
+void menu(int choice){
+    switch (choice) {
+            case 1:
+                // Option 1: Create a random board with empty cells
+                {
+                    int X, N;
+                    printf("Enter the number of empty cells (X): ");
+                    scanf("%d", &X);
+                    printf("Enter the number of boards to generate (N): ");
+                    scanf("%d", &N);
+                    GenerateSudokuWithEmptyCells(X, N);
+                }
+                break;
+
+            case 2:
+                // Option 2: Check if Sudoku has a solution
+                {
+                    int initialBoard[BOARD_SIZE][BOARD_SIZE];
+                    printf("Enter the Sudoku puzzle (9x9) to check for a solution:\n");
+                    // Code to input the Sudoku puzzle into initialBoard
+                    if (solve(initialBoard)) {
+                        printf("The Sudoku puzzle has a solution.\n");
+                    } else {
+                        printf("The Sudoku puzzle does not have a solution.\n");
+                    }
+                }
+                break;
+
+            case 3:
+                // Option 3: Solve a Sudoku puzzle
+                {
+                    int initialBoard[BOARD_SIZE][BOARD_SIZE];
+                    printf("Enter the Sudoku puzzle (9x9) to solve:\n");
+                    // Code to input the Sudoku puzzle into initialBoard
+                    if (solve(initialBoard)) {
+                        printf("Solution for the Sudoku puzzle:\n");
+                        printBoard(initialBoard);
+                    } else {
+                        printf("The Sudoku puzzle is unsolvable.\n");
+                    }
+                }
+                break;
+
+            case 4:
+                // Option 4: Exit
+                printf("Exiting the program.\n");
+                break;
+
+            default:
+                printf("Invalid choice. Please select a valid option.\n");
+                break;
+        }
+    }
 
 void printBoard(int brd[BOARD_SIZE][BOARD_SIZE]) {
     for (int row = BOARD_START_INDEX; row < BOARD_SIZE; row++) {

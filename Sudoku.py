@@ -1,5 +1,6 @@
 import random
 import math
+import numpy as np
 
 BOARD_SIZE = 9
 SUBSECTION_SIZE = 3
@@ -127,4 +128,51 @@ def printResults(X, N, countInvalid, countUnsolvable):
     print("Invalid boards created    :", countInvalid)
     print("Unsolvable boards created :", countUnsolvable)
 
-GenerateSudokuWithEmptyCells(60, 2)
+def input_array():
+    array = []
+    for i in range(9):
+        try:
+            elements = input(f"Enter the elements for row {i + 1}, separated by spaces: ")
+            elements = elements.split()
+            elements = [int(element) for element in elements]
+            array.append(elements)
+        except ValueError:
+            print("Invalid input. Please enter integer values separated by spaces.")
+    
+    return np.array(array)
+
+def main():
+    while True:
+        print("\nSudoku Menu:")
+        print("1. Create a random Sudoku board with empty cells")
+        print("2. Check if a Sudoku has a solution")
+        print("3. Solve a Sudoku")
+        print("4. Quit")
+        
+        choice = input("Enter your choice (1/2/3/4): ")
+        
+        if choice == "1":
+            X = int(input("Enter the number of empty cells: "))
+            N = int(input("Enter the number of boards to generate: "))
+            GenerateSudokuWithEmptyCells(X, N)
+        elif choice == "2":
+            boardToBeSolved = input_array()
+            if solve(boardToBeSolved):
+                print("This Sudoku has a solution!")
+            else:
+                print("This Sudoku does not have a solution.")
+        elif choice == "3":
+            boardToBeSolved = input_array()
+            if solve(boardToBeSolved):
+                print("Solved Sudoku:")
+                printBoard(boardToBeSolved)
+            else:
+                print("This Sudoku does not have a solution.")
+        elif choice == "4":
+            print("Exiting the Sudoku solver. Goodbye!")
+            break
+        else:
+            print("Invalid choice. Please enter a valid option (1/2/3/4).")
+
+if __name__ == "__main__":
+    main()
