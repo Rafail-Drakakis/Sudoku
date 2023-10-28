@@ -1,173 +1,191 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <time.h>
 
-#define SIZE 9
+#define BOARD_SIZE 9
+#define SUBSECTION_SIZE 3
+#define BOARD_START_INDEX 0
+#define NO_VALUE 0
+#define MIN_VALUE 1
+#define MAX_VALUE 9
 
-// Function to print the Sudoku board
-void print_board(int board[SIZE][SIZE]) {
-    for (int row = 0; row < SIZE; row++) {
-        for (int col = 0; col < SIZE; col++) {
-            printf("%d ", board[row][col]);
+void printBoard(int brd[BOARD_SIZE][BOARD_SIZE]);
+
+int isValidSudoku(int initialBoard[BOARD_SIZE][BOARD_SIZE], int row, int column);
+
+int isValidBoard(int initialBoard[BOARD_SIZE][BOARD_SIZE]);
+
+int isValidRow(int initialBoard[BOARD_SIZE][BOARD_SIZE], int row);
+
+int isValidColumn(int initialBoard[BOARD_SIZE][BOARD_SIZE], int col);
+
+int isValidSubgrid(int initialBoard[BOARD_SIZE][BOARD_SIZE], int index);
+
+void initializeBoard(int board[BOARD_SIZE][BOARD_SIZE]);
+
+void generateRandomCells(int initialBoard[BOARD_SIZE][BOARD_SIZE], int boardToBeSolved[BOARD_SIZE][BOARD_SIZE], int numEmptyCells);
+
+bool solve(int initialBoard[BOARD_SIZE][BOARD_SIZE]);
+
+void GenerateSudokuWithEmptyCells(int X, int N);
+
+void printResults(int X, int N, int countInvalid, int countUnsolvable, float clocktime);
+
+int main() {
+    GenerateSudokuWithEmptyCells(60, 10);
+    return 0;
+}
+
+void printBoard(int brd[BOARD_SIZE][BOARD_SIZE]) {
+    for (int row = BOARD_START_INDEX; row < BOARD_SIZE; row++) {
+        for (int column = BOARD_START_INDEX; column < BOARD_SIZE; column++) {
+            printf("%d ", brd[row][column]);
         }
         printf("\n");
     }
 }
 
-// Function to check if a number is valid in a given position
-int is_valid(int board[SIZE][SIZE], int row, int col, int num) {
-    // Check row
-    for (int x = 0; x < SIZE; x++) {
-        if (board[row][x] == num) {
-            return 0;
-        }
-    }
-
-    // Check column
-    for (int x = 0; x < SIZE; x++) {
-        if (board[x][col] == num) {
-            return 0;
-        }
-    }
-
-    // Check 3x3 square
-    int startRow = row - row % 3, startCol = col - col % 3;
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
-            if (board[i + startRow][j + startCol] == num) {
-                return 0;
-            }
-        }
-    }
-
-    return 1;
+int isValidSudoku(int initialBoard[BOARD_SIZE][BOARD_SIZE], int row, int column) {
+    return isValidBoard(initialBoard) && isValidColumn(initialBoard, column) && isValidRow(initialBoard, row);
 }
 
-// Function to solve the Sudoku using backtracking
-int solve_sudoku(int board[SIZE][SIZE]) {
-    int numbers[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-    
-    for (int row = 0; row < SIZE; row++) {
-        for (int col = 0; col < SIZE; col++) {
-            if (board[row][col] == 0) {
-                // Shuffle the numbers array
-                for (int i = 8; i >= 0; i--) {
-                    int j = rand() % (i+1);
-                    int temp = numbers[i];
-                    numbers[i] = numbers[j];
-                    numbers[j] = temp;
-                }
-                
-                // Try shuffled numbers
-                for (int i = 0; i < 9; i++) {
-                    int num = numbers[i];
-                    if (is_valid(board, row, col, num)) {
-                        board[row][col] = num;
-                        if (solve_sudoku(board)) {
-                            return 1;
-                        }
-                        board[row][col] = 0;
+int isValidBoard(int initialBoard[BOARD_SIZE][BOARD_SIZE]) {
+    for (int i = 0; i < BOARD_SIZE; i++) {
+        if (!isValidRow(initialBoard, i) || !isValidColumn(initialBoard, i) || !isValidSubgrid(initialBoard, i)) {
+            return 0; // False
+        }
+    }
+    return 1; // True
+}
+
+int isValidRow(int initialBoard[BOARD_SIZE][BOARD_SIZE], int row) {
+    int seen[BOARD_SIZE + 1] = {0};
+    for (int j = 0; j < BOARD_SIZE; j++) {
+        int val = initialBoard[row][j];
+        if (val != 0 && seen[val]) {
+            return 0; // False
+        }
+        seen[val] = 1;
+    }
+    return 1; // True
+}
+
+int isValidColumn(int initialBoard[BOARD_SIZE][BOARD_SIZE], int col) {
+    int seen[BOARD_SIZE + 1] = {0};
+    for (int i = 0; i < BOARD_SIZE; i++) {
+        int val = initialBoard[i][col];
+        if (val != 0 && seen[val]) {
+            return 0; // False
+        }
+        seen[val] = 1;
+    }
+    return 1; // True
+}
+
+int isValidSubgrid(int initialBoard[BOARD_SIZE][BOARD_SIZE], int index) {
+    int seen[BOARD_SIZE + 1] = {0};
+    int row = (index / SUBSECTION_SIZE) * SUBSECTION_SIZE;
+    int col = (index % SUBSECTION_SIZE) * SUBSECTION_SIZE;
+
+    for (int i = 0; i < SUBSECTION_SIZE; i++) {
+        for (int j = 0; j < SUBSECTION_SIZE; j++) {
+            int val = initialBoard[row + i][col + j];
+            if (val != 0 && seen[val]) {
+                return 0; // False
+            }
+            seen[val] = 1;
+        }
+    }
+    return 1; // True
+}
+
+void initializeBoard(int board[BOARD_SIZE][BOARD_SIZE]) {
+    for (int k = 0; k < BOARD_SIZE; k++) {
+        for (int j = 0; j < BOARD_SIZE; j++) {
+            board[k][j] = 0;
+        }
+    }
+}
+
+void generateRandomCells(int initialBoard[BOARD_SIZE][BOARD_SIZE], int boardToBeSolved[BOARD_SIZE][BOARD_SIZE], int numEmptyCells) {
+    int emptyCellsGenerated = 0;
+    srand(time(NULL));
+
+    while (emptyCellsGenerated < numEmptyCells) {
+        int x = rand() % (BOARD_SIZE - 1);
+        int y = rand() % (BOARD_SIZE - 1);
+        int randomInt = rand() % (MAX_VALUE - MIN_VALUE + 1) + MIN_VALUE;
+
+        if (initialBoard[x][y] == 0 && randomInt != 0) {
+            initialBoard[x][y] = randomInt;
+            boardToBeSolved[x][y] = randomInt;
+            emptyCellsGenerated++;
+        }
+    }
+}
+
+bool solve(int initialBoard[BOARD_SIZE][BOARD_SIZE]) {
+    for (int row = BOARD_START_INDEX; row < BOARD_SIZE; row++) {
+        for (int column = BOARD_START_INDEX; column < BOARD_SIZE; column++) {
+            if (initialBoard[row][column] == NO_VALUE) {
+                for (int k = MIN_VALUE; k <= MAX_VALUE; k++) {
+                    initialBoard[row][column] = k;
+                    if (isValidSudoku(initialBoard, row, column) && solve(initialBoard)) {
+                        return true;
                     }
+                    initialBoard[row][column] = NO_VALUE;
                 }
-                return 0;
+                return false;
             }
         }
     }
-    return 1;
+    return true;
 }
 
+void GenerateSudokuWithEmptyCells(int X, int N) {
+    int numEmptyCells = (BOARD_SIZE * BOARD_SIZE) - X;
+    int countInvalid = 0;
+    int countUnsolvable = 0;
+    clock_t startClock = clock(); // Start the time clock
 
-void removeCells(int board[SIZE][SIZE], int cellsToRemove) {
-    int row, col;
-    
-    srand(time(0)); // Seed for random numbers
-    
-    while (cellsToRemove > 0) {
-        row = rand() % SIZE;
-        col = rand() % SIZE;
-        
-        if (board[row][col] != 0) {
-            board[row][col] = 0;
-            cellsToRemove--;
-        }
-    }
-}
+    for (int i = 0; i < N; i++) {
+        // Declare the arrays
+        int initialBoard[BOARD_SIZE][BOARD_SIZE];
+        int boardTobeSolved[BOARD_SIZE][BOARD_SIZE];
 
-void generateSudoku(int board[SIZE][SIZE], int difficulty) {
-    solve_sudoku(board);
-    removeCells(board, 81 - difficulty);
-}
+        bool isSolvable = true;
+        bool isValid = false;
 
-void initialize_sudoku(int sudoku[SIZE][SIZE]) {
-    for(int i = 0; i < SIZE; i++) {
-        for(int j = 0; j < SIZE; j++) {
-            sudoku[i][j] = 0;  // Assigning each element to 0 (empty)
-        }
-    }
-}
-
-int main() {
-    int choice;
-
-    printf("Sudoku Solver and Checker\n");
-    printf("Enter 1 to solve a Sudoku\n");
-    printf("Enter 2 to check if a Sudoku is valid\n");
-    printf("Enter 3 to generate a Sudoku board\n");
-    printf("Enter 4 to generate and solve a sudoku");
-    printf("Enter your choice: ");
-    scanf("%d", &choice);
-
-    int board[SIZE][SIZE];
-
-    if (choice == 1) {
-        printf("Enter the Sudoku puzzle (use 0 for empty cells):\n");
-        for (int row = 0; row < SIZE; row++) {
-            for (int col = 0; col < SIZE; col++) {
-                scanf("%d", &board[row][col]);
+        while (!isValid || !isSolvable) {
+            initializeBoard(initialBoard);
+            initializeBoard(boardTobeSolved);
+            generateRandomCells(initialBoard, boardTobeSolved, numEmptyCells);
+            isValid = isValidBoard(boardTobeSolved);
+            if (!isValid) {
+                countInvalid++;
+            } else {
+                isSolvable = solve(initialBoard);
+                if (!isSolvable) {
+                    countUnsolvable++;
+                }
             }
         }
-        if (solve_sudoku(board)) {
-            printf("Solved Sudoku:\n");
-            print_board(board);
-        } else {
-            printf("No solution exists.\n");
-        }
-    } else if (choice == 2) {
-        printf("Enter the Sudoku puzzle (use 0 for empty cells):\n");
-        for (int row = 0; row < SIZE; row++) {
-            for (int col = 0; col < SIZE; col++) {
-                scanf("%d", &board[row][col]);
-            }
-        }
-        if (solve_sudoku(board)) {
-            printf("The Sudoku puzzle is valid.\n");
-        } else {
-            printf("The Sudoku puzzle is invalid.\n");
-        }
-    } else if (choice == 3){
-        initialize_sudoku(board);
-        int difficulty;
-        printf("Enter the number of non-zero elements for the generated Sudoku board: ");
-        scanf("%d", &difficulty);
-        generateSudoku(board, difficulty);
-        print_board(board);
-    } else if (choice == 4){
-        int difficulty;
-        printf("Enter the number of non-zero elements for the generated Sudoku board: ");
-        scanf("%d", &difficulty);
-        generateSudoku(board, difficulty);
-        printf("Initial Sudoku:\n");
-        print_board(board);    
-        if (solve_sudoku(board)) {
-            printf("Solved Sudoku:\n");
-            print_board(board);
-        } else {
-            printf("No solution exists.\n");
-        }
-    }   
-    else {
-        printf("Invalid choice!\n");
+        printf("Board #%d\n", (i + 1));
+        printBoard(boardTobeSolved);
+        printf("Solution of the Board #%d\n", (i + 1));
+        printBoard(initialBoard);
     }
+    clock_t endClock = clock(); // End the time clock
+    float clocktime = (float)(endClock - startClock) / CLOCKS_PER_SEC; // Calculate the time
+    printResults(X, N, countInvalid, countUnsolvable, clocktime);
+}
 
-    return 0;
+void printResults(int X, int N, int countInvalid, int countUnsolvable, float clocktime) {
+    // Display the results
+    printf("Empty cells per board     : %d\n", X);
+    printf("Valid boards created      : %d\n", N);
+    printf("Invalid boards created    : %d\n", countInvalid);
+    printf("Unsolvable boards created : %d\n", countUnsolvable);
+    printf("Elapsed time in seconds   : %.2f\n", clocktime);
 }
