@@ -19,57 +19,55 @@ public class Sudoku {
         Scanner scanner = new Scanner(System.in);
 
         int choice;
-        while(true) {
-            System.out.println("Sudoku Menu:");
-            System.out.println("1. Create a random board with several empty cells");
-            System.out.println("2. Check if Sudoku has a solution");
-            System.out.println("3. Solve a Sudoku");
-            System.out.println("4. Exit");
-            System.out.print("Enter your choice (1/2/3/4): ");
+        System.out.println("Sudoku Menu:");
+        System.out.println("1. Create a random board with several empty cells");
+        System.out.println("2. Check if Sudoku has a solution");
+        System.out.println("3. Solve a Sudoku");
+        System.out.println("4. Exit");
+        System.out.print("Enter your choice (1/2/3/4): ");
             
-            if (scanner.hasNextInt()) {
-                choice = scanner.nextInt();
+        if (scanner.hasNextInt()) {
+            choice = scanner.nextInt();
 
-                switch (choice) {
-                    case 1:
-				        System.out.print("Enter the number of empty cells (X): ");
-				        int X = scanner.nextInt();
-				        System.out.print("Enter the number of boards to generate (N): ");
-				        int N = scanner.nextInt();
-                        // Create a random board with several empty cells
-                        solver.GenerateSudokuWithEmptyCells(X,N);
-                        break;
-                    case 2:
-                        // Check if Sudoku has a solution
-                        System.out.println("Enter the Sudoku puzzle to check for a solution:");
-                        int[][] puzzleToCheck = readSudokuInput(scanner);
-                        boolean hasSolution = solver.solve(puzzleToCheck);
-                        if (hasSolution) {
-                            System.out.println("The Sudoku puzzle has a solution.");
-                        } else {
-                            System.out.println("The Sudoku puzzle does not have a solution.");
-                        }
-                        break;
-                    case 3:
-                        // Solve a Sudoku
-                        System.out.println("Enter the Sudoku puzzle to solve:");
-                        int[][] puzzleToSolve = readSudokuInput(scanner);
-                        boolean solved = solver.solve(puzzleToSolve);
-                        if (solved) {
-                            System.out.println("Solved Sudoku:");
-                            solver.printBoard(puzzleToSolve);
-                        } else {
-                            System.out.println("No solution found for the Sudoku puzzle.");
-                        }
-                        break;
-                    case 4:
-                        System.out.println("Exiting the program.");
-                		System.exit(0);
-                    default:
-                        System.out.println("Invalid choice");
-                		System.exit(0);
-                }
-            } 
+            switch (choice) {
+                case 1:
+			        System.out.print("Enter the number of empty cells (X): ");
+			        int X = scanner.nextInt();
+			        System.out.print("Enter the number of boards to generate (N): ");
+			        int N = scanner.nextInt();
+                    // Create a random board with several empty cells
+                    solver.GenerateSudokuWithEmptyCells(X,N);
+                    break;
+                case 2:
+                    // Check if Sudoku has a solution
+                    System.out.println("Enter the Sudoku puzzle to check for a solution:");
+                    int[][] puzzleToCheck = readSudokuInput(scanner);
+                    boolean hasSolution = solver.solve(puzzleToCheck);
+                    if (hasSolution) {
+                        System.out.println("The Sudoku puzzle has a solution.");
+                    } else {
+                        System.out.println("The Sudoku puzzle does not have a solution.");
+                    }
+                    break;
+                case 3:
+                    // Solve a Sudoku
+                    System.out.println("Enter the Sudoku puzzle to solve:");
+                    int[][] puzzleToSolve = readSudokuInput(scanner);
+                    boolean solved = solver.solve(puzzleToSolve);
+                    if (solved) {
+                        System.out.println("Solved Sudoku:");
+                        solver.printBoard(puzzleToSolve);
+                    } else {
+                        System.out.println("No solution found for the Sudoku puzzle.");
+                    }
+                    break;
+                case 4:
+                    System.out.println("Exiting the program.");
+                	System.exit(0);
+                default:
+                    System.out.println("Invalid choice");
+                	System.exit(0);
+            }
         }
     }
 
